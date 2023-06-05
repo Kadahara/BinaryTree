@@ -74,6 +74,16 @@ public:
 		/*return count(Root->pLeft) + count(Root->pRight) + 1;*/
 		return !Root ? 0 : count(Root->pLeft) + count(Root->pRight) + 1;
 	}
+	int Sum(Element* Root)const
+	{
+		/*if (Root == nullptr)return 0;
+		else return Sum(Root->pLeft) + Sum(Root->pRight) + Root->Data;*/
+		return Root == nullptr ? 0 : Sum(Root->pLeft) + Sum(Root->pRight) + Root->Data;
+	}
+	double Avg(Element* Root)const
+	{
+		return (double)Sum(Root) / count(Root);
+	}
 	void print(Element* Root)const
 	{
 		if (Root == nullptr)return;
