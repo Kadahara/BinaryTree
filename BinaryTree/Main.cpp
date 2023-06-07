@@ -1,5 +1,12 @@
 #include<iostream>
+#include<ctime>
 using namespace std;
+using std::cout;
+using std::endl;
+using std::cin;
+
+#define tab "\t"
+#define delimiter "\n------------------------------------------------\n"
 
 class Tree
 {
@@ -14,11 +21,17 @@ protected:
 		Element(int Data, Element* pLeft = nullptr, Element* pRight = nullptr)
 			:Data(Data), pLeft(pLeft), pRight(pRight)
 		{
+#ifdef DEBUG
 			cout << "EConstructor:\t" << this << endl;
+#endif // DEBUG
+
 		}
 		~Element()
 		{
+#ifdef DEBUG
 			cout << "EDestructor" << this << endl;
+#endif // DEBUG
+
 		}
 		friend class Tree;
 		friend class UniqueTree;
@@ -30,13 +43,62 @@ public:
 	}
 	Tree() :Root(nullptr)
 	{
+#ifdef DEBUG
 		cout << "TConstructor:\t" << this << endl;
+#endif // DEBUG
+
+	}
+	Tree(const std::initializer_list<int>& il) :Tree()
+	{
+		for (int i : il)insert(i, Root);
 	}
 	~Tree()
 	{
+		clear(Root);
+#ifdef DEBUG
 		cout << "TDestuctor:\t" << this << endl;
-	}
+#endif // DEBUG
 
+	}
+	void insert(int Data)
+	{
+		insert(Data, Root);
+	}
+	int minValue()const
+	{
+		return minValue(Root);
+	}
+	int maxValue()const
+	{
+		return maxValue(Root);
+	}
+	int count()const
+	{
+		return count(Root);
+	}
+	int Sum()const
+	{
+		return Sum(Root);
+	}
+	double Avg()const
+	{
+		return (double)Sum(Root) / count(Root);
+	}
+	int depth()const
+	{
+		return depth(Root);
+	}
+	void clear()
+	{
+		clear(Root);
+		Root = nullptr;
+	}
+	void print()const
+	{
+		print(Root);
+		cout << endl;
+	}
+private:
 	//					Adding elements:
 	void insert(int Data, Element* Root)
 	{
@@ -84,6 +146,19 @@ public:
 	{
 		return (double)Sum(Root) / count(Root);
 	}
+	int depth(Element* Root)const
+	{
+		if (Root == nullptr)return 0;
+		if (depth(Root->pLeft) > depth(Root->pRight))return depth(Root->pLeft) + 1;
+		else return depth(Root->pRight) + 1;
+	}
+	void clear(Element* Root)
+	{
+		if (Root == nullptr)return;
+		clear(Root->pLeft);
+		clear(Root->pRight);
+		delete Root;
+	}
 	void print(Element* Root)const
 	{
 		if (Root == nullptr)return;
@@ -95,7 +170,7 @@ public:
 
 class UniqueTree :public Tree
 {
-public:
+
 	void insert(int Data, Element* Root)
 	{
 		if (this->Root == nullptr)this->Root = new Element(Data);
@@ -111,35 +186,97 @@ public:
 			else insert(Data, Root->pRight);
 		}
 	}
+public:
+	void insert(int Data)
+	{
+		insert(Data, Root);
+	}
 };
+//#define BASE_CHECK
+//#define DEPTH_CHECK
+
 
 void main()
 {
 	setlocale(LC_ALL, "");
 
+#ifdef BASE_CHECK
 	int n;
 	cout << "Введите размер дерева: "; cin >> n;
 	Tree tree;
 	for (int i = 0; i < n; i++)
 	{
-		tree.insert(rand() % 100, tree.getRoot());
+		tree.insert(rand() % 100);
 	}
-	tree.print(tree.getRoot());
+	tree.print();
 	cout << endl;
 	// minValue
-	cout << "Минимальное значение в дереве: " << tree.minValue(tree.getRoot()) << endl;
-	cout << "Максимальное значение в дереве: " << tree.maxValue(tree.getRoot()) << endl;
-	cout << "Кол-во элементов в дереве: " << tree.count(tree.getRoot()) << endl;
+	cout << "Минимальное значение в дереве: " << tree.minValue() << endl;
+	cout << "Максимальное значение в дереве: " << tree.maxValue() << endl;
+	cout << "Кол-во элементов в дереве: " << tree.count() << endl;
+	cout << "Глубина дерева: " << tree.depth() << endl;
 	cout << "------------------------------------------------" << endl;
 	UniqueTree u_tree;
 	for (int i = 0; i < n; i++)
 	{
-		u_tree.insert(rand() % 100, u_tree.getRoot());
+		u_tree.insert(rand() % 100);
 	}
-	u_tree.print(u_tree.getRoot());
+	u_tree.print();
 	cout << endl;
 	// minValue
-	cout << "Минимальное значение в дереве: " << u_tree.minValue(u_tree.getRoot()) << endl;
-	cout << "Максимальное значение в дереве: " << u_tree.maxValue(u_tree.getRoot()) << endl;
-	cout << "Кол-во элементов в дереве: " << u_tree.count(u_tree.getRoot()) << endl;
+	cout << "Минимальное значение в дереве: " << u_tree.minValue() << endl;
+	cout << "Максимальное значение в дереве: " << u_tree.maxValue() << endl;
+	cout << "Кол-во элементов в дереве: " << u_tree.count() << endl;
+	cout << "Глубина дерева: " << u_tree.depth() << endl;
+#endif // BASE_CHECK
+
+#ifdef DEPTH_CHECK
+	Tree tree = { 50, 25, 75, 16, 17, 80, 64 };
+	tree.print();
+	cout << "Глубина дерева: " << tree.depth() << endl;
+#endif // DEPTH_CHECK
+
+	clock_t t_start, t_end;
+	int n;
+	cout << "Введите размер дерева: "; cin >> n;
+	Tree tree;
+	t_start = clock(); // функция clock возвращает кол во тактов процессора CPU
+	for (int i = 0; i < n; i++)
+	{
+		tree.insert(rand() % 100);
+	}
+	t_end = clock();
+	cout << "Дерево заполнено за " << double(t_end - t_start) / CLOCKS_PER_SEC << " сек";
+	//tree.print();
+	cout << endl;
+	// minValue
+	t_start = clock();
+	cout << "Минимальное значение в дереве: " << tree.minValue() << "\t";
+	t_end = clock();
+	cout << double(t_end - t_start) / CLOCKS_PER_SEC << " сек" << endl;
+
+	t_start = clock();
+	cout << "Максимальное значение в дереве: " << tree.maxValue() <<  tab;
+	t_end = clock();
+	cout << double(t_end - t_start) / CLOCKS_PER_SEC << " сек" << endl;
+
+	t_start = clock();
+	cout << "Кол-во элементов в дереве: " << tree.count() << tab;
+	t_end = clock();
+	cout << double(t_end - t_start) / CLOCKS_PER_SEC << " сек" << endl;
+
+	t_start = clock();
+	cout << "Сумма элементов: " << tree.Sum() << tab;
+	t_end = clock();
+	cout << double(t_end - t_start) / CLOCKS_PER_SEC << " сек" << endl;
+
+	t_start = clock();
+	cout << "Ср.ареф всех элементов: " << tree.Avg() << tab;
+	t_end = clock();
+	cout << double(t_end - t_start) / CLOCKS_PER_SEC << " сек" << endl;
+
+	t_start = clock();
+	cout << "Глубина дерева: " << tree.depth() << tab;
+	t_end = clock();
+	cout << double(t_end - t_start) / CLOCKS_PER_SEC << " сек" << endl;
 }
