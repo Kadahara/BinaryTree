@@ -31,7 +31,10 @@ protected:
 #ifdef DEBUG
 			cout << "EDestructor" << this << endl;
 #endif // DEBUG
-
+		}
+		bool is_leaf()const
+		{
+			return pLeft == pRight;
 		}
 		friend class Tree;
 		friend class UniqueTree;
@@ -92,6 +95,10 @@ public:
 	{
 		clear(Root);
 		Root = nullptr;
+	}
+	void erase(int Data)
+	{
+		erase(Data, Root);
 	}
 	void print()const
 	{
@@ -165,6 +172,31 @@ private:
 		clear(Root->pLeft);
 		clear(Root->pRight);
 		delete Root;
+	}
+	void erase(int Data, Element* Root)
+	{
+		if (Root == nullptr)return;
+		erase(Data, Root->pLeft);
+		erase(Data, Root->pRight);
+		if (Data == Root->Data)
+		{
+			if (Root->is_leaf())
+			{
+				delete Root;
+				Root = nullptr;
+			}
+			else
+				if (count(Root->pLeft) > count(Root->pRight))
+				{
+					Root->Data = maxValue(Root->pLeft);
+					erase(maxValue(Root->pLeft), Root->pLeft);
+				}
+				else
+				{
+					Root->Data = minValue(Root->pRight);
+					erase(minValue(Root->pRight), Root->pRight);
+				}
+		}
 	}
 	void print(Element* Root)const
 	{
