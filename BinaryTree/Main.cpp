@@ -105,6 +105,16 @@ public:
 		print(Root);
 		cout << endl;
 	}
+	void print(int depth)const
+	{
+		print(Root, depth);
+		cout << endl;
+	}
+	void true_print()const
+	{
+		true_print(Root, depth());
+		cout << endl;
+	}
 private:
 	//					Adding elements:
 	void insert(int Data, Element* Root)
@@ -173,7 +183,7 @@ private:
 		clear(Root->pRight);
 		delete Root;
 	}
-	void erase(int Data, Element* Root)
+	void erase(int Data, Element*& Root)
 	{
 		if (Root == nullptr)return;
 		erase(Data, Root->pLeft);
@@ -186,6 +196,7 @@ private:
 				Root = nullptr;
 			}
 			else
+			{
 				if (count(Root->pLeft) > count(Root->pRight))
 				{
 					Root->Data = maxValue(Root->pLeft);
@@ -196,6 +207,7 @@ private:
 					Root->Data = minValue(Root->pRight);
 					erase(minValue(Root->pRight), Root->pRight);
 				}
+			}
 		}
 	}
 	void print(Element* Root)const
@@ -204,6 +216,21 @@ private:
 		print(Root->pLeft);
 		cout << Root->Data << "\t";
 		print(Root->pRight);
+	}
+	void print(Element* Root, int depth)const
+	{
+		if (Root == nullptr)return;
+		print(Root->pLeft, depth - 1);
+		if (depth == 0) cout << Root->Data << tab;
+		print(Root->pRight, depth - 1);
+	}
+	void true_print(Element* Root, int depth)const
+	{
+		if (depth == - 1)return;
+		true_print(Root, depth - 1);
+		print(Root, depth);
+		cout << endl;
+
 	}
 };
 
@@ -241,8 +268,8 @@ void measure(const char description[], const Tree& tree, T (Tree::*member_functi
 	cout << " выполнено за " << double(t_end - t_start) / CLOCKS_PER_SEC << " секунд \n";
 }
 //#define BASE_CHECK
-//#define DEPTH_CHECK
-#define PREFORMANS_CHECK_1
+#define DEPTH_CHECK
+//#define PREFORMANS_CHECK_1
 
 
 void main()
@@ -280,9 +307,16 @@ void main()
 #endif // BASE_CHECK
 
 #ifdef DEPTH_CHECK
-	Tree tree = { 50, 25, 75, 16, 17, 80, 64 };
+	Tree tree = { 50, 25, 75, 16, 32, 80, 64 };
 	//tree.~Tree();
+	//tree.print();
+	//int value;
+	//cout << "¬ведите удал€емое значение: "; cin >> value;
+	//tree.erase(value);
 	tree.print();
+	tree.true_print();
+
+
 	cout << "√лубина дерева: " << tree.depth() << endl;
 #endif // DEPTH_CHECK
 
@@ -298,7 +332,11 @@ void main()
 	}
 	t_end = clock();
 	cout << "ƒерево заполнено за " << double(t_end - t_start) / CLOCKS_PER_SEC << " сек";
-	//tree.print();
+	tree.print();
+	int value;
+	cout << "¬ведите удал€емое значение: "; cin >> value;
+	tree.erase(value);
+	tree.print();
 	cout << endl;
 	// minValue
 
